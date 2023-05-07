@@ -1,0 +1,182 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Definição da estrutura dos nós da lista encadeada
+struct Node {
+    char nome[20];
+    float nota;
+    int turma;
+    struct Node* next;
+};
+
+// Declaração das funções
+void initializeList(struct Node** head);
+void insertAtBeginning(struct Node** head);
+void insertAtEnd(struct Node** head);
+void deleteFromMiddle(struct Node** head, int pos);
+void printListForward(struct Node* node);
+void printListBackward(struct Node* node);
+void deleteList(struct Node** head);
+
+// Função principal
+int main() {
+    struct Node* head = NULL; // Cria a lista vazia
+    int option;
+    do {
+        printf("\nEscolha uma opcao:\n");
+        printf("1 - Inicializar lista\n");
+        printf("2 - Inserir elemento no inicio\n");
+        printf("3 - Inserir elemento no final\n");
+        printf("4 - Excluir elemento do meio\n");
+        printf("5 - Imprimir lista nos dois sentidos\n");
+        printf("6 - Excluir toda a lista\n");
+        printf("0 - Sair\n");
+        scanf("%d", &option);
+        switch (option) {
+            case 1:
+                initializeList(&head);
+                break;
+            case 2:
+                insertAtBeginning(&head);
+                break;
+            case 3:
+                insertAtEnd(&head);
+                break;
+            case 4:
+                printf("Digite a posicao do elemento que deseja excluir: ");
+                int pos;
+                scanf("%d", &pos);
+                deleteFromMiddle(&head, pos);
+                break;
+            case 5:
+                printf("\nLista:\n");
+                printListForward(head);
+                printf("\nLista reversa:\n");
+                printListBackward(head);
+                break;
+            case 6:
+                deleteList(&head);
+                break;
+            case 0:
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                break;
+        }
+    } while (option != 0);
+    return 0;
+}
+
+// Função para inicializar a lista
+void initializeList(struct Node** head) {
+    *head = NULL;
+    printf("Lista inicializada!\n");
+}
+
+// Função para inserir um elemento no início da lista
+void insertAtBeginning(struct Node** head) {
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+    printf("\nDigite o nome do aluno (max 20 caracteres): ");
+    scanf("%s", new_node->nome);
+    printf("Digite a nota do aluno: ");
+    scanf("%f", &new_node->nota);
+    printf("Digite a turma do aluno: ");
+    scanf("%d", &new_node->turma);
+    new_node->next = *head;
+    *head = new_node;
+    printf("Elemento inserido no inicio da lista!\n");
+}
+
+// Função para inserir um elemento no final da lista
+void insertAtEnd(struct Node** head) {
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+    printf("\nDigite o nome do aluno (max 20 caracteres): ");
+    scanf("%s", new_node->nome);
+    printf("Digite a nota do aluno: ");
+    scanf("%f", &new_node->nota);
+    printf("Digite a turma do aluno: ");
+    scanf("%d", &new_node->turma);
+    new_node->next = NULL;
+    if (*head == NULL) {
+        *head = new_node;
+        printf("Elemento inserido no final da lista!\n");
+        return;
+    }
+    struct Node* last = *head;
+    while (last->next != NULL)
+        last = last->next;
+    last->next = new_node;
+    printf("Elemento inserido no final da lista!\n");
+}
+
+// Função para excluir um elemento do meio da lista
+void deleteFromMiddle(struct Node** head, int pos) {
+    if (*head == NULL) {
+        printf("Lista vazia!\n");
+        return;
+    }
+    struct Node* temp = *head;
+    if (pos == 1) {
+        *head = temp->next;
+        free(temp);
+        printf("Elemento excluido da lista!\n");
+        return;
+    }
+    for (int i = 1; temp != NULL && i < pos - 1; i++)
+        temp = temp->next;
+    if (temp == NULL || temp->next == NULL) {
+        printf("Posicao invalida!\n");
+        return;
+    }
+    struct Node* next = temp->next->next;
+    free(temp->next);
+    temp->next = next;
+    printf("Elemento excluido da lista!\n");
+}
+
+// Função para imprimir a lista no sentido normal
+void printListForward(struct Node* node) {
+    if (node == NULL) {
+        printf("Lista vazia!\n");
+        return;
+    }
+    while (node != NULL) {
+        printf("Nome: %s\n", node->nome);
+        printf("Nota: %.2f\n", node->nota);
+        printf("Turma: %d\n\n", node->turma);
+        node = node->next;
+    }
+}
+
+// Função para imprimir a lista no sentido reverso
+void printListBackward(struct Node* node) {
+    if (node == NULL) {
+        printf("Lista vazia!\n");
+        return;
+    }
+    struct Node* prev = NULL;
+    struct Node* current = node;
+    struct Node* next = NULL;
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+    node = prev;
+    printListForward(node);
+}
+
+// Função para excluir toda a lista
+void deleteList(struct Node** head) {
+    struct Node* current = *head;
+    struct Node* next;
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    *head = NULL;
+    printf("Lista excluida!\n");
+}
